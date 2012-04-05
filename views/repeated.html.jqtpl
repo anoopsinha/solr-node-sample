@@ -1,0 +1,1 @@
+{{partial(test) "mypartial.html.jqtpl"}}

@@ -4,10 +4,16 @@
 </head>
 <body>
 
-<script></script>
+<script>
+
+  $("#userInput").keyup(function(e) {
+     alert("Handler for .keypress() called. " + String.fromCharCode(e.charCode));
+  });
+
+</script>
 
     <form method="post" action"/">
-        <input type="text" name="query" id="inputUser" />
+        <input type="text" name="query" id="userInput" />
         <input type="submit" name="Submit" />
         <div id="box">
         </div>

@@ -17,6 +17,7 @@ app.configure(function(){
 });
 
 
+
 app.get('/', function(req, res){
 	    res.render('index.html.jqtpl', {
 		    as : global,
@@ -25,15 +26,38 @@ app.get('/', function(req, res){
     });
 
 
-app.post('/', function(req, res){
-    
-    console.log('post received');
-    console.log(req.param('query', null));
 
-    var query = req.param('query', null);
-    var url_string = 'http://localhost:9200/_search?q='+escape(query)+'&pretty=true';
-    var t_client = http.createClient(9200, "localhost");  
-    var request = t_client.request("GET", "/_search?q="+escape(query), {"host": "localhost"});  
+
+app.get('/search/:q?', function(req, res) {
+	query = req.params.q;
+	console.log(query);
+	searchSolr(res, query, renderJSON, null);
+    });
+
+
+
+function renderJSON(res, ans, template_file) {
+    res.writeHead(200, {'content-type': 'text/plain' });
+    res.write(JSON.stringify(ans));
+    res.end('\n');
+}
+
+
+function renderJqtpl(res, ans, template_file) {
+    console.log("made it into renderJqtpl")
+    res.render(template_file, {
+	    as : global,
+	    test : ans
+	 });
+}
+
+
+
+function searchSolr(res, query, display_func, jqtpl) {
+
+    var final_ans = "";
+    var t_client = http.createClient(8983, "localhost");  
+    var request = t_client.request("GET", "/solr/select?q="+escape(query)+'&wt=json&rows=10', {"host": "localhost"});  
   
     request.addListener("response", function(response) {  
         var body = "";  
@@ -42,22 +66,34 @@ app.post('/', function(req, res){
         });  
         response.addListener("end", function() { 
 	    ans = JSON.parse(body);
+	    console.log("items : " + ans.response.docs.length);
 	    render = [{}];
-            if (typeof ans.hits != 'undefined') {
-  	      for (var i = 0; i < ans.hits.total; i++) {
-		render[i] = {'a':JSON.stringify(ans.hits.hits[i])};
+            if (typeof ans.response.docs != 'undefined') {
+  	      for (var i = 0; i < ans.response.docs.length; i++) {
+		// console.log(JSON.stringify(ans.response.docs[i]));
+		render[i] = {'a':JSON.stringify(ans.response.docs[i])};
 	      }
             }
-
-	    console.log(render);
-	    res.render('index.html.jqtpl', {
-		    as : global,
-		    test : render
-	       });
+	    display_func(res, render, jqtpl);
         });  
     });  
-
     request.end();
+}
+
+
+
+
+
+app.post('/', function(req, res){
+    
+    console.log('post received');
+    console.log(req.param('query', null));
+
+
+    // var url_string = 'http://localhost:8983/solr/select?q='+escape(query)+'&wt=json&rows=10';
+
+    var query = req.param('query', null);
+    searchSolr(res, query, renderJqtpl, 'index.html.jqtpl');
 });
 
 
