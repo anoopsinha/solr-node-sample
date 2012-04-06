@@ -4,6 +4,8 @@ var jqtpl = require("jqtpl");
 
 var app = express.createServer();
 
+var index_template = 'index.html.jqtpl';
+
 
 app.configure(function(){
     app.set("view engine", "html");
@@ -19,7 +21,7 @@ app.configure(function(){
 
 
 app.get('/', function(req, res){
-	    res.render('index.html.jqtpl', {
+	    res.render(index_template, {
 		    as : global,
 		    test : {"a" : ""}
 	       });
@@ -93,7 +95,7 @@ app.post('/', function(req, res){
     // var url_string = 'http://localhost:8983/solr/select?q='+escape(query)+'&wt=json&rows=10';
 
     var query = req.param('query', null);
-    searchSolr(res, query, renderJqtpl, 'index.html.jqtpl');
+    searchSolr(res, query, renderJqtpl, index_template);
 });
 
 
