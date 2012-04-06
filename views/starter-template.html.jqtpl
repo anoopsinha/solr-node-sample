@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Giggle</title>
+    <title>Bootstrap, from Twitter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -30,30 +30,10 @@
 
 
     <style type="text/css">
-
-       html {
-         overflow-y: scroll;
-       }
-
        div .a {
          display:block;
          padding-bottom:20px;
-         overflow:hidden;
        }
-
-       .row {
-         text-align:center;
-       }
-
-       #userInput {
-         width:400px;
-       } 
-       
-       #searchButton {
-         width:80px;
-       }
-       
-
     </style>
 
   </head>
@@ -69,14 +49,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">Giggle</a>
+          <a class="brand" href="#">Project name</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
-	      <!--
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
-	      -->
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -85,19 +63,15 @@
 
     <div class="container">
 
-      <div class="row">
-	<div class="span12">
-	  <h1>Giggle</h1>
-	  <p>Simple sample search using Solr and Node.js.</p>
+      <h1>Bootstrap starter template</h1>
+      <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
 
-          <form method="post" action"/">
-            <input type="text" name="query" id="userInput" />
-            <input type="submit" name="Submit" value="Search" id="searchButton"/>
-            <div id="box">
-            </div>
-	 </form>
-	</div>
-      </div>
+      <form method="post" action"/">
+        <input type="text" name="query" id="userInput" />
+        <input type="submit" name="Submit" />
+        <div id="box">
+        </div>
+      </form>
 
       <div id="main">
         {{partial(test) "mypartial.html.jqtpl"}}

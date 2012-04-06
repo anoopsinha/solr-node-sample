@@ -1,0 +1,60 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+<style type="text/css">
+   div {
+     display:block;
+     padding-bottom:20px;
+   }
+ </style>
+
+</head>
+<body>
+
+<script>
+
+  $(document).ready(function() {
+     $("#userInput").keyup(function(e) {
+        var query = $(this).val();
+        var url_string = '/search/' + escape(query);
+        // call solr and display results as a callback
+        $.getJSON(url_string, function(data) {
+           
+           $('#main').empty();
+
+           for (var i = 0; i < data.length; i++) {
+              jQuery('<div/>', {
+			       class: 'a',
+			       text: JSON.stringify(data[i])
+			       }).appendTo('#main');
+           }
+
+           
+        });
+
+     });
+
+  });
+
+
+
+</script>
+
+
+
+    <form method="post" action"/">
+        <input type="text" name="query" id="userInput" />
+        <input type="submit" name="Submit" />
+        <div id="box">
+        </div>
+    </form>
+
+
+
+    <div id="main">
+       {{partial(test) "mypartial.html.jqtpl"}}
+    </div>
+
+</body>
+</html>
