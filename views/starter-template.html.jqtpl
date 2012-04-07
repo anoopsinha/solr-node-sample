@@ -67,7 +67,7 @@
       <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
 
       <form method="post" action"/">
-        <input type="text" name="query" id="userInput" />
+        <input type="text" name="query" id="userInput" autocomplete="off" />
         <input type="submit" name="Submit" />
         <div id="box">
         </div>

@@ -91,7 +91,7 @@
 	  <p>Simple sample search using Solr and Node.js.</p>
 
           <form method="post" action"/">
-            <input type="text" name="query" id="userInput" />
+            <input type="text" name="query" id="userInput" autocomplete="off"/>
             <input type="submit" name="Submit" value="Search" id="searchButton"/>
             <div id="box">
             </div>
@@ -123,9 +123,6 @@
     <script src="docs/assets/js/bootstrap-carousel.js"></script>
     <script src="docs/assets/js/bootstrap-typeahead.js"></script>
 
-
-
-
 <script>
 
   $(document).ready(function() {
@@ -134,22 +131,19 @@
         var url_string = '/search/' + escape(query);
         // call solr and display results as a callback
         $.getJSON(url_string, function(data) {
-           
            $('#main').empty();
-
+           // assume data[i].a comes back properly formatted !!
            for (var i = 0; i < data.length; i++) {
-
-              jQuery('<div/>', {
+              if (data[i].a) {
+                elem = jQuery('<div/>', {
 			       class: 'a',
-			       text: JSON.stringify(data[i])
-			       }).appendTo('#main');
-           }
-
-           
+			       });
+	        elem.appendTo('#main');
+                elem.get(0).innerHTML = data[i].a;
+              }
+           }           
         });
-
      });
-
   });
 
 

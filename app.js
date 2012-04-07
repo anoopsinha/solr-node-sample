@@ -55,8 +55,9 @@ function renderJqtpl(res, ans, template_file) {
 
 
 
-function searchSolr(res, query, display_func, jqtpl) {
 
+
+function searchSolr(res, query, display_func, jqtpl) {
     var final_ans = "";
     var t_client = http.createClient(8983, "localhost");  
     var request = t_client.request("GET", "/solr/select?q="+escape(query)+'&wt=json&rows=10', {"host": "localhost"});  
@@ -67,16 +68,21 @@ function searchSolr(res, query, display_func, jqtpl) {
             body += data;  
         });  
         response.addListener("end", function() { 
-	    ans = JSON.parse(body);
-	    console.log("items : " + ans.response.docs.length);
-	    render = [{}];
-            if (typeof ans.response.docs != 'undefined') {
-  	      for (var i = 0; i < ans.response.docs.length; i++) {
-		// console.log(JSON.stringify(ans.response.docs[i]));
-		render[i] = {'a':JSON.stringify(ans.response.docs[i])};
-	      }
-            }
-	    display_func(res, render, jqtpl);
+   	    try {
+	      ans = JSON.parse(body);
+	      console.log("items : " + ans.response.docs.length);
+	      render = [{}];
+              if (typeof ans.response.docs != 'undefined') {
+  	        for (var i = 0; i < ans.response.docs.length; i++) {
+		    // render[i] = {'a':JSON.stringify(ans.response.docs[i])};
+		    render[i] = {'a':(iterateAttributesAndFormHTMLLabels(ans.response.docs[i]))};
+		    // console.log(iterateAttributesAndFormHTMLLabels(ans.response.docs[i]));
+	        }
+              }
+	      display_func(res, render, jqtpl);
+            } catch(err) {
+	      display_func(res, [{'a':""}], jqtpl);
+	    }
         });  
     });  
     request.end();
@@ -84,13 +90,25 @@ function searchSolr(res, query, display_func, jqtpl) {
 
 
 
+// http://stackoverflow.com/questions/4104321/recursively-parsing-json
+function iterateAttributesAndFormHTMLLabels(o){
+    var s = '';
+    for(var a in o){
+        if (typeof o[a] == 'object'){
+            s+='<label><font color=green>'+a+':</font></label>';
+            s+=iterateAttributesAndFormHTMLLabels(o[a]);
+        }else{
+            s+='<label>'+a+': <font color=blue>'+o[a]+'</font></label>';
+        }//end if
+    }//end for
+    return s;
+}//end function
 
 
 app.post('/', function(req, res){
     
     console.log('post received');
     console.log(req.param('query', null));
-
 
     // var url_string = 'http://localhost:8983/solr/select?q='+escape(query)+'&wt=json&rows=10';
 
