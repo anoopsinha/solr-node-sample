@@ -19,7 +19,6 @@ app.configure(function(){
 });
 
 
-
 app.get('/', function(req, res){
 	    res.render(index_template, {
 		    as : global,
@@ -28,12 +27,11 @@ app.get('/', function(req, res){
     });
 
 
-
-
 app.get('/search/:q?', function(req, res) {
-	query = req.params.q;
-	console.log(query);
-	searchSolr(res, query, renderJSON, null);
+	var query = req.params.q;
+	var display = req.param('display', null);
+	console.log(query + ", display " + display);
+	searchSolr(res, query, renderJSON, null, display);
     });
 
 
@@ -57,11 +55,11 @@ function renderJqtpl(res, ans, template_file) {
 
 
 
-function searchSolr(res, query, display_func, jqtpl) {
+function searchSolr(res, query, display_func, jqtpl, display_fields) {
     var final_ans = "";
     var t_client = http.createClient(8983, "localhost");  
     var request = t_client.request("GET", "/solr/select?q="+escape(query)+'&wt=json&rows=10', {"host": "localhost"});  
-  
+
     request.addListener("response", function(response) {  
         var body = "";  
         response.addListener("data", function(data) {  
@@ -69,22 +67,35 @@ function searchSolr(res, query, display_func, jqtpl) {
         });  
         response.addListener("end", function() { 
    	    try {
-	      ans = JSON.parse(body);
+	      var ans = JSON.parse(body);
 	      console.log("items : " + ans.response.docs.length);
 	      render = [{}];
               if (typeof ans.response.docs != 'undefined') {
+		var df = parseDisplayFields(display_fields);
   	        for (var i = 0; i < ans.response.docs.length; i++) {
 		    // render[i] = {'a':JSON.stringify(ans.response.docs[i])};
-		    render[i] = {'a':(createCollapsibleHtmlBox(ans.response.docs[i], ['name', 'cat']))};
+		    render[i] = {'a':(createCollapsibleHtmlBox(ans.response.docs[i], df))};  // we could pass a second parameter to show just specific fields in the collapsible version
 	        }
               }
 	      display_func(res, render, jqtpl);
             } catch(err) {
+	      console.log(err);
 	      display_func(res, [{'a':""}], jqtpl);
 	    }
         });  
     });  
     request.end();
+}
+
+function parseDisplayFields(display) {
+    var ans;
+    if (display == null || typeof display == "undefined") {
+	ans = [];
+    } else {
+	ans = display.split(/[ ]*,[ ]*/);
+    }
+    console.log(ans);
+    return ans;
 }
 
 
@@ -99,7 +110,6 @@ function createCollapsibleHtmlBox(o, toShow){
     s += '</div>';
     return s;
 }
-
 
 function checkToShow(a, toShow) {
     if (toShow == null || typeof toShow == "undefined") {  // show everything
@@ -127,6 +137,12 @@ function iterateAttributesAndFormHTMLLabels(o, toShow){
 }//end function
 
 
+
+
+
+
+
+
 app.post('/', function(req, res){
     
     console.log('post received');
@@ -135,7 +151,8 @@ app.post('/', function(req, res){
     // var url_string = 'http://localhost:8983/solr/select?q='+escape(query)+'&wt=json&rows=10';
 
     var query = req.param('query', null);
-    searchSolr(res, query, renderJqtpl, index_template);
+    var display = req.param('display', null);
+    searchSolr(res, query, renderJqtpl, index_template, null, display);
 });
 
 

@@ -60,7 +60,6 @@
 
   <body>
 
-
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -78,6 +77,9 @@
               <li><a href="#contact">Contact</a></li>
 	      -->
             </ul>
+	    <p class="navbar-text pull-right">
+	      <a data-toggle="modal" href="#displayFields">Setup</a>
+	    </p>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -85,14 +87,33 @@
 
     <div class="container">
 
+
+      <!-- dialog to set results display fields to display -->
+      <div id="displayFields" class="modal hide fade in" style="display: none; ">  
+	<div class="modal-header">  
+	  <a class="close" data-dismiss="modal">×</a>  
+	  <h3>What fields do you want to display?</h3>  
+	</div>  
+	<div class="modal-body">  
+	  <h4>Enter the fields to display in the default results view (comma separated).</h4>  
+	  <p>e.g., name, cat</p>
+          <input type="text" class="input-medium" name="displayFieldsText" id="displayFieldsText" autocomplete="off" value="name"/>
+	</div>
+	<div class="modal-footer">  
+	  <a href="#" class="btn btn-success">Call to action</a>  
+	  <a href="#" class="btn" data-dismiss="modal">Close</a>  
+	</div>  
+      </div>
+
+
+      <!-- main search box here -->
       <div class="row">
 	<div class="span12">
 	  <h1>Giggle</h1>
 	  <p>Simple sample search using Solr and Node.js.</p>
-
-          <form method="post" action"/">
-            <input type="text" name="query" id="userInput" autocomplete="off"/>
-            <input type="submit" name="Submit" value="Search" id="searchButton"/>
+          <form class="well form-search" method="post" action"/">
+            <input type="text" class="input-medium" name="query" id="userInput" autocomplete="off"/>
+            <button type="submit" class="btn" name="Submit" value="Search" id="searchButton"><i class="icon-search"></i>  Search</button>
             <div id="box">
             </div>
 	 </form>
@@ -129,6 +150,11 @@
      $("#userInput").keyup(function(e) {
         var query = $(this).val();
         var url_string = '/search/' + escape(query);
+
+        url_string += ($('#displayFieldsText').val().length > 0 ? "?display=" + escape($('#displayFieldsText').val()) : "");
+
+        console.log(url_string);
+
         // call solr and display results as a callback
         $.getJSON(url_string, function(data) {
            $('#main').empty();
