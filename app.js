@@ -75,8 +75,7 @@ function searchSolr(res, query, display_func, jqtpl) {
               if (typeof ans.response.docs != 'undefined') {
   	        for (var i = 0; i < ans.response.docs.length; i++) {
 		    // render[i] = {'a':JSON.stringify(ans.response.docs[i])};
-		    render[i] = {'a':(iterateAttributesAndFormHTMLLabels(ans.response.docs[i]))};
-		    // console.log(iterateAttributesAndFormHTMLLabels(ans.response.docs[i]));
+		    render[i] = {'a':(createCollapsibleHtmlBox(ans.response.docs[i], ['name', 'cat']))};
 	        }
               }
 	      display_func(res, render, jqtpl);
@@ -89,17 +88,40 @@ function searchSolr(res, query, display_func, jqtpl) {
 }
 
 
+// take a JSON object and an array of top level item labels to show
+function createCollapsibleHtmlBox(o, toShow){
+    var fullHtml = iterateAttributesAndFormHTMLLabels(o, null);
+    var partHtml = iterateAttributesAndFormHTMLLabels(o, toShow);
+    var s = '';    
+    s += '<div onclick="$(this).children().toggle();">';
+    s += '  <div class="part">' + partHtml + '</div>';
+    s += '  <div class="full" style="display:none">' + fullHtml + '</div>';
+    s += '</div>';
+    return s;
+}
+
+
+function checkToShow(a, toShow) {
+    if (toShow == null || typeof toShow == "undefined") {  // show everything
+	return true;
+    } else if (toShow.indexOf(a) != -1) {
+	return true;
+    }
+    else return false;
+}
 
 // http://stackoverflow.com/questions/4104321/recursively-parsing-json
-function iterateAttributesAndFormHTMLLabels(o){
+function iterateAttributesAndFormHTMLLabels(o, toShow){
     var s = '';
     for(var a in o){
-        if (typeof o[a] == 'object'){
-            s+='<label><font color=green>'+a+':</font></label>';
-            s+=iterateAttributesAndFormHTMLLabels(o[a]);
-        }else{
-            s+='<label>'+a+': <font color=blue>'+o[a]+'</font></label>';
-        }//end if
+	if (checkToShow(a, toShow)) {
+          if (typeof o[a] == 'object'){
+              s+='<label><font color=green>'+a+':</font></label>';
+              s+=iterateAttributesAndFormHTMLLabels(o[a]);
+          } else {
+              s+='<label>'+a+': <font color=blue>'+o[a]+'</font></label>';
+          }//end if
+	}
     }//end for
     return s;
 }//end function
