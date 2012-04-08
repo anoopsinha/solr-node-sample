@@ -28,10 +28,7 @@ app.get('/', function(req, res){
 
 
 app.get('/search/:q?', function(req, res) {
-	var query = req.params.q;
-	var display = req.param('display', null);
-	console.log(query + ", display " + display);
-	searchSolr(res, query, renderJSON, null, display);
+	searchSolr(req, res, renderJSON, null);
     });
 
 
@@ -53,10 +50,20 @@ function renderJqtpl(res, ans, template_file) {
 
 
 
-function searchSolr(res, query, display_func, jqtpl, display_fields) {
+function searchSolr(req, res, display_func, jqtpl) {
+
+    var query = req.params.q;
+    var display = req.param('display', null);
+    var start_p = req.param('start', null);
+    var start_str = (start_p != null) ? '&start='+start_p : '';
+    var rows_p = req.param('rows', null);
+    var rows_str = (rows_p != null) ? '&rows='+rows_p : '&rows=10';
+    console.log(query + ", display " + display + ", start " + start_p + ", rows " + rows_p);
+
+
     var final_ans = "";
     var t_client = http.createClient(8983, "localhost");  
-    var request = t_client.request("GET", "/solr/select?q="+escape(query)+'&wt=json&rows=10', {"host": "localhost"});  
+    var request = t_client.request("GET", "/solr/select?q="+escape(query)+'&wt=json' + rows_str + start_str, {"host": "localhost"});  
 
     request.addListener("response", function(response) {  
         var body = "";  
@@ -74,7 +81,7 @@ function searchSolr(res, query, display_func, jqtpl, display_fields) {
 
 	      render = [{}];
               if (typeof ans.response.docs != 'undefined') {
-		var df = parseDisplayFields(display_fields);
+		var df = parseDisplayFields(display);
   	        for (var i = 0; i < ans.response.docs.length; i++) {
 		    // render[i] = {'a':JSON.stringify(ans.response.docs[i])};
 		    render[i] = {'a':(createCollapsibleHtmlBox(ans.response.docs[i], df)),  'numFound':numFound, 'rows':rows, 'index':i+1};  // we pass a second parameter to show just specific fields in the collapsible version
@@ -152,9 +159,9 @@ app.post('/', function(req, res){
 
     // var url_string = 'http://localhost:8983/solr/select?q='+escape(query)+'&wt=json&rows=10';
 
-    var query = req.param('query', null);
-    var display = req.param('display', null);
-    searchSolr(res, query, renderJqtpl, index_template, null, display);
+    // var query = req.param('query', null);
+    // var display = req.param('display', null);
+    searchSolr(req, res, renderJqtpl, index_template, null);
 });
 
 

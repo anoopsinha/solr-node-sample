@@ -128,8 +128,20 @@
             <button type="submit" class="btn" name="Submit" value="Search" id="searchButton"><i class="icon-search"></i>  Search</button>
 	 <!-- </form> -->
 	 </div>
+
+	 <div class="prevNext">
+	    page: <input type="text" id="pageN" name="pageN" value="1" style="width:20px;"/> 
+	    rows: <input type="text" id="rowsN" name="rowsN" value="10" style="width:20px;"/> 
+	    <span id="pagesBox">
+	    </span>
+         </div>
+
          <div class="rm pull-left numFoundBox"><span id="numFound">0</span>&nbspresult<span id="numFoundPlural">s</span></div>
-	</div>
+  	 </div> <!-- numFoundBox -->
+
+
+
+
       </div>
 
       <div id="main">
@@ -158,7 +170,60 @@
 
 <script>
 
+   function isInt(n) {
+     return typeof n == 'number' && n % 1 == 0;
+   }
+
+   function getPageStatus() {
+     var ans = {};
+     try {
+       ans['page'] = parseInt($('#pageN').val());
+       ans['rows'] = parseInt($('#rowsN').val());
+       ans['results'] = parseInt($('#numFound').html());
+     } catch(err) {
+       console.log("Error: make sure pages & rows text fields are integers.");
+       ans = {};      
+     }
+     return ans;
+   }
+
   $(document).ready(function() {
+
+     $("#pageN").keyup(function(e) {
+        if (isInt(parseInt($(this).val()))) {
+          var pageStatus = getPageStatus();
+          if (pageStatus != {}) {
+            if (pageStatus.page * pageStatus.rows > pageStatus.results) {
+              $('#pageN').val(1 + Math.floor(pageStatus.results / pageStatus.rows));  // max value
+            } 
+            if (pageStatus.page < 1) {
+              $('#pageN').val(1);
+            }
+            showCurrentSearch();
+          }
+        } else {
+          console.log("Error: Make sure the # of page to show is a number");
+        }
+     });
+
+     $("#rowsN").keyup(function(e) {
+        if (isInt(parseInt($(this).val()))) {
+          showCurrentSearch();
+        } else {
+          console.log("Error: Make sure the # of rows to show is a number");
+        }
+     });
+
+
+
+    $(".pageNum").live('click', function() {
+      try {
+        $('#pageN').val(($(this).find('a').html()));
+        showCurrentSearch();
+      } catch(err) {
+        console.log(err);
+      }
+    });
 
     $(".a").live({
         mouseenter:
@@ -174,11 +239,24 @@
        }
      );
 
-     $("#userInput").keyup(function(e) {
-        var query = $(this).val();
-        var url_string = '/search/' + escape(query);
 
+     $("#userInput").keyup(function(e) {
+        showCurrentSearch();
+     });
+
+     $("#userInput").focus();
+
+  });
+
+
+
+  function showCurrentSearch() {
+
+        var query = $("#userInput").val();
+        var url_string = '/search/' + escape(query);
         url_string += ($('#displayFieldsText').val().length > 0 ? "?display=" + escape($('#displayFieldsText').val()) : "");
+        url_string += '&start=' + ($('#pageN').val()-1) * $('#rowsN').val();
+        url_string += '&rows=' + $('#rowsN').val();
 
         // call solr and display results as a callback
         $.getJSON(url_string, function(data) {
@@ -192,20 +270,43 @@
 	        elem.appendTo('#main');
                 elem.get(0).innerHTML = data[i].a;
               }
+
+              // show the pagination
               if (typeof data[i].numFound == 'undefined') {
 	         $('#numFound').html("0");
 	         $('#numFoundPlural').html("s");
+		 $('#pageN').val(0);
+		 $('#pagesBox').empty();
 	      } else {
    	        if (i == 0) { // update # items found
+
 	          $('#numFound').html(data[i].numFound);
 	          (data[i].numFound == 1) ? $('#numFoundPlural').html("") : $('#numFoundPlural').html("s");;
+
+
+	          // create pages links in pagesBox
+		  $('#pagesBox').empty();
+
+                  var nF = parseInt(data[i].numFound);
+                  var nR = parseInt(data[i].rows);
+                  var pN = 0;
+
+                  for (var j = 0; j < nF; j+=nR) { 
+                     pN++;
+                     pelem = jQuery('<span/>', {
+			           class: 'pageNum',
+			           html: '<a href="#">' + pN + '</a>'
+			         });
+                     $('#pagesBox').append(pelem);
+		     $('#pagesBox').append(' ');
+                  }
 	        } 
 	      }
            }           
         
         });
-     });
-  });
+
+  }
 
 
 
