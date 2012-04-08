@@ -44,13 +44,11 @@ function renderJSON(res, ans, template_file) {
 
 
 function renderJqtpl(res, ans, template_file) {
-    console.log("made it into renderJqtpl")
     res.render(template_file, {
 	    as : global,
 	    test : ans
 	 });
 }
-
 
 
 
@@ -69,18 +67,23 @@ function searchSolr(res, query, display_func, jqtpl, display_fields) {
    	    try {
 	      var ans = JSON.parse(body);
 	      console.log("items : " + ans.response.docs.length);
+	      console.log("rows : " + ans.responseHeader.params.rows);
+	      console.log("numfound : " + ans.response.numFound);
+	      var rows = ans.responseHeader.params.rows;
+	      var numFound = ans.response.numFound;
+
 	      render = [{}];
               if (typeof ans.response.docs != 'undefined') {
 		var df = parseDisplayFields(display_fields);
   	        for (var i = 0; i < ans.response.docs.length; i++) {
 		    // render[i] = {'a':JSON.stringify(ans.response.docs[i])};
-		    render[i] = {'a':(createCollapsibleHtmlBox(ans.response.docs[i], df))};  // we could pass a second parameter to show just specific fields in the collapsible version
+		    render[i] = {'a':(createCollapsibleHtmlBox(ans.response.docs[i], df)),  'numFound':numFound, 'rows':rows, 'index':i+1};  // we pass a second parameter to show just specific fields in the collapsible version
 	        }
               }
 	      display_func(res, render, jqtpl);
             } catch(err) {
 	      console.log(err);
-	      display_func(res, [{'a':""}], jqtpl);
+	      display_func(res, [{'a':"", 'numFound':numFound, 'rows':rows, 'index':-1}], jqtpl);
 	    }
         });  
     });  

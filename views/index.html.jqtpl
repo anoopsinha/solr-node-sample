@@ -35,13 +35,19 @@
          overflow-y: scroll;
        }
 
-       div .a {
-         display:block;
+       .rm {
          padding-bottom:10px;
          padding-left:20px;
          padding-top:10px;
-         overflow:hidden;
+       }
 
+       .numFoundBox {
+         color: #999;
+       }
+
+       .a {
+         display:block;
+         overflow:hidden;
        }
 
        .hoverA {
@@ -59,7 +65,6 @@
        #searchButton {
          width:80px;
        }
-       
 
     </style>
 
@@ -123,7 +128,7 @@
             <button type="submit" class="btn" name="Submit" value="Search" id="searchButton"><i class="icon-search"></i>  Search</button>
 	 <!-- </form> -->
 	 </div>
-         <div id="box"></div>
+         <div class="rm pull-left numFoundBox"><span id="numFound">0</span>&nbspresult<span id="numFoundPlural">s</span></div>
 	</div>
       </div>
 
@@ -155,7 +160,7 @@
 
   $(document).ready(function() {
 
-       $(".a").live({
+    $(".a").live({
         mouseenter:
            function() {
              if ($(this).html().length > 0) {
@@ -167,9 +172,7 @@
              $(this).removeClass("hoverA");
            }
        }
-    );
-
-
+     );
 
      $("#userInput").keyup(function(e) {
         var query = $(this).val();
@@ -184,12 +187,22 @@
            for (var i = 0; i < data.length; i++) {
               if (data[i].a) {
                 elem = jQuery('<div/>', {
-			       class: 'a',
+			       class: 'a rm',
 			       });
 	        elem.appendTo('#main');
                 elem.get(0).innerHTML = data[i].a;
               }
+              if (typeof data[i].numFound == 'undefined') {
+	         $('#numFound').html("0");
+	         $('#numFoundPlural').html("s");
+	      } else {
+   	        if (i == 0) { // update # items found
+	          $('#numFound').html(data[i].numFound);
+	          (data[i].numFound == 1) ? $('#numFoundPlural').html("") : $('#numFoundPlural').html("s");;
+	        } 
+	      }
            }           
+        
         });
      });
   });
