@@ -37,8 +37,15 @@
 
        div .a {
          display:block;
-         padding-bottom:20px;
+         padding-bottom:10px;
+         padding-left:20px;
+         padding-top:10px;
          overflow:hidden;
+
+       }
+
+       .hoverA {
+         background:whiteSmoke;
        }
 
        .row {
@@ -78,7 +85,7 @@
 	      -->
             </ul>
 	    <p class="navbar-text pull-right">
-	      <a data-toggle="modal" href="#displayFields">Setup</a>
+	      <a data-toggle="modal" href="#displayFields">Options</a>
 	    </p>
           </div><!--/.nav-collapse -->
         </div>
@@ -100,8 +107,7 @@
           <input type="text" class="input-medium" name="displayFieldsText" id="displayFieldsText" autocomplete="off" value="name"/>
 	</div>
 	<div class="modal-footer">  
-	  <a href="#" class="btn btn-success">Call to action</a>  
-	  <a href="#" class="btn" data-dismiss="modal">Close</a>  
+	  <a href="#" class="btn btn-success" data-dismiss="modal">Close</a>  
 	</div>  
       </div>
 
@@ -110,13 +116,14 @@
       <div class="row">
 	<div class="span12">
 	  <h1>Giggle</h1>
-	  <p>Simple sample search using Solr and Node.js.</p>
-          <form class="well form-search" method="post" action"/">
+	  <p>Simple search using Solr and Node.js</p>
+          <!-- <form class="well form-search" method="post" action"/"> -->
+	  <div class="well form-search">
             <input type="text" class="input-medium" name="query" id="userInput" autocomplete="off"/>
             <button type="submit" class="btn" name="Submit" value="Search" id="searchButton"><i class="icon-search"></i>  Search</button>
-            <div id="box">
-            </div>
-	 </form>
+	 <!-- </form> -->
+	 </div>
+         <div id="box"></div>
 	</div>
       </div>
 
@@ -147,13 +154,28 @@
 <script>
 
   $(document).ready(function() {
+
+       $(".a").live({
+        mouseenter:
+           function() {
+             if ($(this).html().length > 0) {
+               $(this).addClass("hoverA");
+             }
+           },
+        mouseleave:
+           function() {
+             $(this).removeClass("hoverA");
+           }
+       }
+    );
+
+
+
      $("#userInput").keyup(function(e) {
         var query = $(this).val();
         var url_string = '/search/' + escape(query);
 
         url_string += ($('#displayFieldsText').val().length > 0 ? "?display=" + escape($('#displayFieldsText').val()) : "");
-
-        console.log(url_string);
 
         // call solr and display results as a callback
         $.getJSON(url_string, function(data) {

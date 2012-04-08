@@ -94,7 +94,6 @@ function parseDisplayFields(display) {
     } else {
 	ans = display.split(/[ ]*,[ ]*/);
     }
-    console.log(ans);
     return ans;
 }
 
