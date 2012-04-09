@@ -31,8 +31,8 @@ Currently only local installation.
 
 * Download from http://www.apache.org/dyn/closer.cgi/lucene/solr/3.5.0  
 
-  cd apache-solr-3.5.0/example/
-  java -jar start.jar
+     cd apache-solr-3.5.0/example/
+     java -jar start.jar
 
 * Be sure Solr is running by checking: http://localhost:8983/solr/admin
 
