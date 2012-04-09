@@ -275,7 +275,7 @@
               if (typeof data[i].numFound == 'undefined') {
 	         $('#numFound').html("0");
 	         $('#numFoundPlural').html("s");
-		 $('#pageN').val(0);
+		 $('#pageN').val(1);
 		 $('#pagesBox').empty();
 	      } else {
    	        if (i == 0) { // update # items found
