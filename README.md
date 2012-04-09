@@ -39,12 +39,12 @@ Currently only local installation.
 
 #### Step 2. Clone or fork this repository
 
-  cd solr-node-sample/
-  node app.js
+     cd solr-node-sample/
+     node app.js
 
 #### Step 3. Browse the interface locally from a web browser
 
-  open http://localhost:3000/
+     open http://localhost:3000/
 
 
   
