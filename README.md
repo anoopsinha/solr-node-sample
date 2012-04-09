@@ -29,12 +29,11 @@ Currently only local installation.
 
 #### Step 1. Get Apache Solr.  
 
-* Download from http://www.apache.org/dyn/closer.cgi/lucene/solr/3.5.0  
-
      cd apache-solr-3.5.0/example/
      java -jar start.jar
 
-* Be sure Solr is running by checking: http://localhost:8983/solr/admin
+Download from http://www.apache.org/dyn/closer.cgi/lucene/solr/3.5.0.  
+Be sure Solr is running by checking: http://localhost:8983/solr/admin
 
 
 #### Step 2. Clone or fork this repository
