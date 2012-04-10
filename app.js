@@ -99,8 +99,8 @@ function searchSolr(req, res, display_func, jqtpl) {
 
 function parseDisplayFields(display) {
     var ans;
-    if (display == null || typeof display == "undefined") {
-	ans = [];
+    if (display == null || typeof display == "undefined" || display.length == 0) {
+	ans = null;  // shows all of the fields
     } else {
 	ans = display.split(/[ ]*,[ ]*/);
     }

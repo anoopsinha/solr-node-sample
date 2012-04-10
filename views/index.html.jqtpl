@@ -109,10 +109,10 @@
 	<div class="modal-body">  
 	  <h4>Enter the fields to display in the default results view (comma separated).</h4>  
 	  <p>e.g., name, cat</p>
-          <input type="text" class="input-medium" name="displayFieldsText" id="displayFieldsText" autocomplete="off" value="name"/>
+          <input type="text" class="input-medium" name="displayFieldsText" id="displayFieldsText" autocomplete="off" value=""/>
 	</div>
 	<div class="modal-footer">  
-	  <a href="#" class="btn btn-success" data-dismiss="modal">Close</a>  
+	  <a href="#" class="btn btn-success" data-dismiss="modal" onclick="showCurrentSearch()">Close</a>  
 	</div>  
       </div>
 
@@ -254,8 +254,8 @@
 
         var query = $("#userInput").val();
         var url_string = '/search/' + escape(query);
-        url_string += ($('#displayFieldsText').val().length > 0 ? "?display=" + escape($('#displayFieldsText').val()) : "");
-        url_string += '&start=' + ($('#pageN').val()-1) * $('#rowsN').val();
+        url_string += '?start=' + ($('#pageN').val()-1) * $('#rowsN').val();
+        url_string += ($('#displayFieldsText').val().length > 0 ? "&display=" + escape($('#displayFieldsText').val()) : "");
         url_string += '&rows=' + $('#rowsN').val();
 
         // call solr and display results as a callback
