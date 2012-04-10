@@ -7,6 +7,10 @@ var app = express.createServer();
 var index_template = 'index.html.jqtpl';
 
 
+var SOLR_PORT = (process.env.SOLR_PORT || 8983);
+var SOLR_SERVER = (process.env.SOLR_SERVER || "localhost");
+
+
 app.configure(function(){
     app.set("view engine", "html");
     app.register(".jqtpl", jqtpl.express);
@@ -62,8 +66,8 @@ function searchSolr(req, res, display_func, jqtpl) {
 
 
     var final_ans = "";
-    var t_client = http.createClient(8983, "localhost");  
-    var request = t_client.request("GET", "/solr/select?q="+escape(query)+'&wt=json' + rows_str + start_str, {"host": "localhost"});  
+    var t_client = http.createClient(SOLR_PORT, SOLR_SERVER);  
+    var request = t_client.request("GET", "/solr/select?q="+escape(query)+'&wt=json' + rows_str + start_str, {"host": SOLR_SERVER});  
 
     request.addListener("response", function(response) {  
         var body = "";  
@@ -157,10 +161,8 @@ app.post('/', function(req, res){
     console.log('post received');
     console.log(req.param('query', null));
 
-    // var url_string = 'http://localhost:8983/solr/select?q='+escape(query)+'&wt=json&rows=10';
+    // for reference -- var url_string = 'http://localhost:8983/solr/select?q='+escape(query)+'&wt=json&rows=10';
 
-    // var query = req.param('query', null);
-    // var display = req.param('display', null);
     searchSolr(req, res, renderJqtpl, index_template, null);
 });
 
