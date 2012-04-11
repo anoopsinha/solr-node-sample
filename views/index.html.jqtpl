@@ -124,7 +124,7 @@
 	  <p>Simple search using Solr and Node.js</p>
           <!-- <form class="well form-search" method="post" action"/"> -->
 	  <div class="well form-search">
-            <input type="text" class="input-medium" name="query" id="userInput" autocomplete="off"/>
+            <input type="text" class="input-medium" name="query" id="userInput" autocomplete="off" value="*"/>
             <button type="submit" class="btn" name="Submit" value="Search" id="searchButton"><i class="icon-search"></i>  Search</button>
 	 <!-- </form> -->
 	 </div>
@@ -245,7 +245,7 @@
      });
 
      $("#userInput").focus();
-
+     showCurrentSearch();
   });
 
 
